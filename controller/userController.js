@@ -27,10 +27,9 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
     if (findUser && (await findUser.isPasswordMatched(password))) {
         const refreshToken = await generateRefreshToken(findUser?.id);
         const updateUser = await User.findByIdAndUpdate(findUser?._id, { refreshToken: refreshToken }, { new: true });
-        res.cookie("Refresh Token",refreshToken,{
+        res.cookie("refreshToken",refreshToken,{
             httpOnly:true,
-            maxAge:72*60*60*1000
-        })
+            maxAge:1        })
         res.json({
             _id: findUser?._id,
             firstName: findUser?.firstName,
@@ -46,8 +45,10 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
 // refresh Tokne
 
 const handleRefreshToken=asyncHandler(async (req,res)=>{
-const cookie=req.cookies;
-console.log(cookie)
+    const cookie=req.cookies;
+
+    const refreshToken=cookie?.refreshToken111
+    console.log("refreshToken",refreshToken)
 
 })
 
@@ -84,7 +85,9 @@ const getAllUser = asyncHandler(async (req, res) => {
 
 // get a single user
 const getAUser = asyncHandler(async (req, res) => {
+
     const { id } = req.params;
+    console.log("In the get single user",id)
     validateMongoDbId(id);
 
     try {
@@ -130,6 +133,7 @@ const blockUser = asyncHandler(async (req, res) => {
 
 const unblockUser = asyncHandler(async (req, res) => {
     const { id } = req.params;
+
     validateMongoDbId(id);
     try {
         await User.findByIdAndUpdate(

@@ -8,11 +8,15 @@ const authMiddlware = asyncHandler(async (req, res, next) => {
     let token;
     if (req?.headers?.authorization?.startsWith("Bearer")) {
         token = req.headers.authorization.split(" ")[1];
+
         try {
             if (token) {
+            
                 const decoded = jwt.verify(token, "mySecret");
                 const user = await User.findById(decoded?.id);
                 req.user = user; 
+                console.log("req.user",req.user.refreshToken)
+                
                 next();
             }
         } catch (error) {
