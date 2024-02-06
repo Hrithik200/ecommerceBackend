@@ -26,10 +26,13 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
     const findUser = await User.findOne({ email: email });
     if (findUser && (await findUser.isPasswordMatched(password))) {
         const refreshToken = await generateRefreshToken(findUser?.id);
+  
         const updateUser = await User.findByIdAndUpdate(findUser?._id, { refreshToken: refreshToken }, { new: true });
+ 
         res.cookie("refreshToken",refreshToken,{
             httpOnly:true,
-            maxAge:1        })
+            maxAge:1*60*1000        })
+            
         res.json({
             _id: findUser?._id,
             firstName: findUser?.firstName,
@@ -47,8 +50,8 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
 const handleRefreshToken=asyncHandler(async (req,res)=>{
     const cookie=req.cookies;
 
-    const refreshToken=cookie?.refreshToken111
-    console.log("refreshToken",refreshToken)
+    const refreshToken=cookie?.refreshToken
+    console.log("HandlerefreshToken",refreshToken)
 
 })
 
