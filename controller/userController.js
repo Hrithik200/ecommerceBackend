@@ -4,7 +4,7 @@ const asyncHandler = require("express-async-handler");
 const validateMongoDbId = require("../utils/validateMongodbId");
 const { generateRefreshToken } = require("../config/refreshToken");
 const jwt = require("jsonwebtoken");
-const { decode } = require("punycode");
+
 
 // create a user
 const createUser = asyncHandler(async (req, res) => {
@@ -65,7 +65,6 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
             res.json({ accessToken });
         }
     });
-    res.json(user);
 });
 
 // Logout
@@ -82,7 +81,6 @@ const logout = asyncHandler(async (req, res) => {
 
     res.clearCookie("refreshToken", { httpOnly: true, secure: true }).sendStatus(204); // forbidden
 });
-
 
 // Update User
 const updatedUser = asyncHandler(async (req, res) => {

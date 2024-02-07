@@ -11,12 +11,11 @@ const authMiddlware = asyncHandler(async (req, res, next) => {
 
         try {
             if (token) {
-            
                 const decoded = jwt.verify(token, "mySecret");
                 const user = await User.findById(decoded?.id);
-                req.user = user; 
-                console.log("req.user",req.user.refreshToken)
-                
+                req.user = user;
+                console.log("req.user", req.user.refreshToken);
+
                 next();
             }
         } catch (error) {
@@ -27,14 +26,13 @@ const authMiddlware = asyncHandler(async (req, res, next) => {
     }
 });
 
-const isAdmin=asyncHandler(async (req,res,next)=>{
-const {email}=req.user;
-const adminUser=await User.findOne({email});
-if(adminUser.isRole != "admin"){
-  throw new Error("You are not an Admin");
-}
-else{
-  next();
-}
-})
-module.exports = { authMiddlware ,isAdmin};
+const isAdmin = asyncHandler(async (req, res, next) => {
+    const { email } = req.user;
+    const adminUser = await User.findOne({ email });
+    if (adminUser.isRole != "admin") {
+        throw new Error("You are not an Admin");
+    } else {
+        next();
+    }
+});
+module.exports = { authMiddlware, isAdmin };
