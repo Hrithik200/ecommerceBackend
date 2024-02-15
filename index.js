@@ -4,6 +4,11 @@ require("dotenv").config();
 
 const authRouter = require("./routes/authRoute");
 const productRouter=require("./routes/productRoute");
+const blogRouter=require("./routes/blogRoute")
+const categoryRouter=require("./routes/productcategoryRoute")
+const blogcategoryRouter=require("./routes/blogCatRoute")
+const brandRouter=require("./routes/brandRoute")
+const couponRouter=require("./routes/couponRoute")
 
 const bodyParser = require("body-parser");
 const { notFound, errorHandler } = require("./middlewares/errorHandler");
@@ -11,10 +16,11 @@ const { notFound, errorHandler } = require("./middlewares/errorHandler");
 const app = express();
 const PORT = 3000;
 const cookieParser=require("cookie-parser")
-const morgan=require("morgan")
+const morgan=require("morgan") 
 dbConnect();
 
 app.use(morgan("dev"))
+
 //body parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -23,6 +29,11 @@ app.use(cookieParser())
 //routes
 app.use("/api/user", authRouter);
 app.use("/api/product", productRouter);
+app.use("/api/blog",blogRouter);
+app.use("/api/category",categoryRouter)
+app.use("/api/blogcategory",blogcategoryRouter)
+app.use("/api/brand",brandRouter)
+app.use("/api/coupon",couponRouter)
 
 // error handler
 app.use(notFound)

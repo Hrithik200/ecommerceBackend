@@ -14,8 +14,6 @@ const authMiddlware = asyncHandler(async (req, res, next) => {
                 const decoded = jwt.verify(token, "mySecret");
                 const user = await User.findById(decoded?.id);
                 req.user = user;
-                console.log("req.user", req.user.refreshToken);
-
                 next();
             }
         } catch (error) {
@@ -27,7 +25,7 @@ const authMiddlware = asyncHandler(async (req, res, next) => {
 });
 
 const isAdmin = asyncHandler(async (req, res, next) => {
-    console.log(req.user)
+
     const { email } = req.user;
     const adminUser = await User.findOne({ email });
     if (adminUser.isRole != "admin") {
