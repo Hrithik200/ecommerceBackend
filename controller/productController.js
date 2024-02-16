@@ -3,7 +3,8 @@ const User = require("../models/userModel");
 const asyncHandler = require("express-async-handler");
 const validateMongoDbId = require("../utils/validateMongodbId");
 const slugify = require("slugify");
-
+const cloudinaryUploadImg = require("../utils/cloudinary");
+const fs=require("fs")
 const createProduct = asyncHandler(async (req, res) => {
     try {
         if (req.body.title) {
@@ -169,17 +170,51 @@ const rating = asyncHandler(async (req, res) => {
         let totalRating = getAllRatings.ratings.length;
         let ratingsum = getAllRatings.ratings.map((item) => item.star).reduce((prev, curr) => prev + curr, 0);
         let actualRating = Math.round(ratingsum / totalRating);
-       let finalproduct=  await Product.findByIdAndUpdate(
+        let finalproduct = await Product.findByIdAndUpdate(
             prodId,
             {
                 totalrating: actualRating,
             },
             { new: true }
         );
-        res.json(finalproduct)
+        res.json(finalproduct);
     } catch (error) {
         console.log("error in rating");
         throw new Error(error);
     }
 });
-module.exports = { createProduct, getaproduct, getallProduct, updateProduct, deleteProduct, addToWishlist, rating };
+
+const uploadImages = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    validateMongoDbId(id);
+
+    try {
+        const uploader = (path) => cloudinaryUploadImg(path, "images");
+        const urls = [];
+        const files = req.files;
+        console.log(files)
+        for (const file of files) {
+            const  {path}  = file;
+            console.log(path)
+            const newpath = await uploader(path);
+            console.log("newpath",newpath)
+            urls.push(newpath);
+       fs.unlinkSync(path)
+        }
+        const findProduct = await Product.findByIdAndUpdate(
+            id,
+            {
+                images: urls.map(file => {
+                    return file;
+                }),
+            },
+            { new: true }
+        );
+        res.json(findProduct)
+    } catch (error) {
+        console.log("error in uploadImages");
+        throw new Error(error);
+    }
+});
+
+module.exports = { createProduct, getaproduct, getallProduct, updateProduct, deleteProduct, addToWishlist, rating, uploadImages };
